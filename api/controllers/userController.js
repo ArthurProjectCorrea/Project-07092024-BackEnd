@@ -1,50 +1,23 @@
 const userService = require("../services/userService");
 
+// Registrar usuário
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, accessTypeId } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      accessTypeId,
-    });
-
-    await user.save();
-
-    // Excluindo a senha antes de enviar a resposta
-    user.password = undefined;
-
-    res.status(201).json({ user });
+    const user = await userService.registerUser(req.body);
+    res.status(201).json(user);
   } catch (error) {
-    console.error("Error in register:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-// Login de usuário
-const loginUser = async (req, res) => {
+// Autenticar usuário (login)
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
-    });
+    const user = await userService.authenticateUser(email, password);
+    res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -58,7 +31,7 @@ exports.listUsers = async (req, res) => {
   }
 };
 
-// Deletar um usuário
+// Deletar usuário
 exports.deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
