@@ -1,17 +1,17 @@
 const userService = require("../services/userService");
 
 // Registrar usuário
-exports.register = async (req, res) => {
+exports.signup = async (req, res) => {
   try {
-    const user = await userService.registerUser(req.body);
+    const user = await userService.signupUser(req.body);
     res.status(201).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Autenticar usuário (login)
-exports.login = async (req, res) => {
+// Autenticar usuário (signin)
+exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await userService.authenticateUser(email, password);

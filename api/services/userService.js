@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // Registrar um novo usuário
-exports.registerUser = async (userData) => {
+exports.signupUser = async (userData) => {
   const { name, email, password, accessTypeId } = userData;
 
   const userExists = await User.findOne({ email });
@@ -31,7 +31,7 @@ exports.registerUser = async (userData) => {
   };
 };
 
-// Fazer login do usuário (autenticação)
+// Fazer signin do usuário (autenticação)
 exports.authenticateUser = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) throw new Error("User not found");
