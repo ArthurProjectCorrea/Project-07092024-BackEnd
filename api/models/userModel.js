@@ -1,12 +1,18 @@
-const mongoose = require("mongoose");
+const pool = require('../../config/db');
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  accessTypeId: { type: Number, required: false },
-});
+const UserModel = {
+  createUser: async (name, email, hashedPassword, accesses_id) => {
+    try {
+      const [result] = await pool.query(
+        'INSERT INTO USERS (NAME, EMAIL, PASSWORD, ACCESSES_ID) VALUES (?, ?, ?, ?)',
+        [name, email, hashedPassword, accesses_id]
+      );
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error.message);
+      throw error; // Lança o erro para o controller lidar
+    }
+  },
+};
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+module.exports = UserModel;

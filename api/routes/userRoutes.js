@@ -1,11 +1,9 @@
-const express = require("express");
+// api/routes/userRoutes.js
+const express = require('express');
 const router = express.Router();
-const userController = require("../controllers/userController");
+const userController = require('../controllers/userController');
 
-// Rotas de usuários
-router.post("/signup", userController.signup); // Registro de usuário
-router.post("/signin", userController.signin); // signin de usuário (autenticação)
-router.get("/", userController.listUsers); // Listar usuários
-router.delete("/:userId", userController.deleteUser); // Deletar usuário
+// Rota de cadastro
+router.post('/signup', userController.signup);
 
 module.exports = router;

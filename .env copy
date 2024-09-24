@@ -1,5 +1,6 @@
-MONGO_URI=mongodb+srv://arthurdatabase:b2JH1pRLirAasuB8@cluster0.bbtfs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=sua_chave_secreta_jwt
+DB_HOST=34.170.211.138
+DB_USER=arthurcorrea
+DB_PASSWORD=y{dm"73=3TZN2lT\
+DB_NAME=dbblogsantalucia
+DB_PORT=3306
 PORT=4000
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret

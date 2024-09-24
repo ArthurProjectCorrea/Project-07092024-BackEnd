@@ -1,43 +1,39 @@
-const userService = require("../services/userService");
+// api/controllers/userController.js
+const pool = require("../../config/db");
+const bcrypt = require("bcrypt");
 
-// Registrar usuário
+// Função para verificar se o email já existe no banco de dados
+const checkEmailExists = async (email) => {
+  const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+    email,
+  ]);
+  return rows.length > 0;
+};
+
+// Função para cadastrar o usuário
 exports.signup = async (req, res) => {
-  try {
-    const user = await userService.signupUser(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+  const { name, email, password, accesses_id } = req.body;
 
-// Autenticar usuário (signin)
-exports.signin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await userService.authenticateUser(email, password);
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+    // Verifica se o email já existe
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
 
-// Listar todos os usuários
-exports.listUsers = async (req, res) => {
-  try {
-    const users = await userService.listUsers();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+    // Gera hash da senha
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-// Deletar usuário
-exports.deleteUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    await userService.deleteUser(userId);
-    res.status(200).json({ message: "User deleted successfully" });
+    // Insere o novo usuário no banco de dados
+    const query = `
+      INSERT INTO users (name, email, password, accesses_id)
+      VALUES (?, ?, ?, ?)
+    `;
+    await pool.query(query, [name, email, hashedPassword, accesses_id]);
+
+    res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Erro ao cadastrar usuário:", error);
+    res.status(500).json({ error: "Failed to create user" });
   }
 };
