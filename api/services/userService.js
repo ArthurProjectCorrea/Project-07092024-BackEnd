@@ -1,22 +1,33 @@
-const bcrypt = require('bcryptjs');
-const UserModel = require('../models/userModel');
+// api/services/userService.js
+const { User } = require("../models");
+const bcrypt = require("bcryptjs");
 
-const UserService = {
-  signup: async (name, email, password, accesses_id) => {
+module.exports = {
+  async createUser({ name, email, password }) {
     try {
-      // Criptografar a senha
       const hashedPassword = await bcrypt.hash(password, 10);
-      
-      // Tentar criar o usuário
-      const newUser = await UserModel.createUser(name, email, hashedPassword, accesses_id);
-      return newUser;
+      const user = await User.create({ name, email, password: hashedPassword });
+      return user;
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new Error('Email already exists');
-      }
-      throw error;
+      throw new Error("Error creating user");
+    }
+  },
+
+  async findUserByEmail(email) {
+    try {
+      const user = await User.findOne({ where: { email } });
+      return user;
+    } catch (error) {
+      throw new Error("Error finding user by email");
+    }
+  },
+
+  async getAllUsers() {
+    try {
+      const users = await User.findAll();
+      return users;
+    } catch (error) {
+      throw new Error("Error fetching users");
     }
   },
 };
-
-module.exports = UserService;
