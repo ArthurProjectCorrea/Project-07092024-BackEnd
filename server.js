@@ -1,26 +1,15 @@
-// server.js
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const db = require('./api/models');
-const userRoutes = require('./api/routes/userRoutes');
-
+const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 4000;
+const cors = require("cors");
 
-// Middleware
+const userRoutes = require("./api/routes/userRoutes");
+
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// Rotas
-app.use('/api', userRoutes);
+app.use("/api/users", userRoutes);
 
-// Sincronizando o Sequelize com o banco de dados
-db.sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}).catch(err => {
-  console.log('Error: ', err);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
