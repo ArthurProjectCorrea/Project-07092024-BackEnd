@@ -1,0 +1,15 @@
+# Credenciais do PostgreSQL
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=@Arthur22042002
+DB_HOST=127.0.0.1
+DB_DIALECT=postgres
+
+# Credenciais do e-mail
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=bloguedosanta@gmail.com
+EMAIL_PASS=bolacha01
+
+# Porta do servidor
+PORT=4000
