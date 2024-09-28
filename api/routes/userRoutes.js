@@ -1,5 +1,5 @@
-const express = require("express");
-const userController = require("../controllers/userController");
+import express from 'express';
+import * as userController from '../controllers/userController.js'; // Adicione a extensão ".js"
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.delete("/:id", userController.deleteUser);
 router.get("/:id", userController.getUserById);
 router.get("/", userController.getAllUsers);
 
-module.exports = router;
+export default router;

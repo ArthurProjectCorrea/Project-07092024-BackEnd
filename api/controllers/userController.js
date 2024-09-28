@@ -1,6 +1,7 @@
-const userService = require("../services/userService");
+import * as userService from "../services/userService.js"; // Adicione a extensão ".js"
 
-const signup = async (req, res) => {
+// Função para registrar um novo usuário
+export const signup = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -11,11 +12,9 @@ const signup = async (req, res) => {
 
     const emailIsValid = userService.isEmailValidDomain(email);
     if (!emailIsValid) {
-      return res
-        .status(400)
-        .json({
-          error: "Invalid email domain. Please use a valid email provider.",
-        });
+      return res.status(400).json({
+        error: "Invalid email domain. Please use a valid email provider.",
+      });
     }
 
     const user = await userService.createUser(req.body);
@@ -27,7 +26,7 @@ const signup = async (req, res) => {
 };
 
 // Função para autenticar o usuário
-const authenticate = async (req, res) => {
+export const authenticate = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await userService.authenticateUser(email, password);
@@ -45,7 +44,7 @@ const authenticate = async (req, res) => {
 };
 
 // Função para deletar um usuário
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
     const deletedCount = await userService.deleteUser(id);
@@ -60,7 +59,7 @@ const deleteUser = async (req, res) => {
 };
 
 // Função para listar um único usuário
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await userService.getUserById(id);
@@ -75,7 +74,7 @@ const getUserById = async (req, res) => {
 };
 
 // Função para listar todos os usuários
-const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await userService.getAllUsers();
     return res.status(200).json(users);
@@ -83,12 +82,4 @@ const getAllUsers = async (req, res) => {
     console.error("Error fetching users:", error);
     return res.status(400).json({ error: "Failed to fetch users." });
   }
-};
-
-module.exports = {
-  signup,
-  authenticate,
-  deleteUser,
-  getUserById,
-  getAllUsers,
 };

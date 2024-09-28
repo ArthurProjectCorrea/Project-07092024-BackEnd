@@ -1,16 +1,23 @@
 // server.js
-const express = require('express');
-const { sequelize } = require('./api/models');
-const userRoutes = require('./api/routes/userRoutes');
-const emailRoutes = require('./api/routes/emailRoutes'); // Importar as rotas de e-mail
+
+import express from 'express';
+import bodyParser from 'body-parser';
+import { sequelize } from './api/models/index.js';
+import userRoutes from './api/routes/userRoutes.js';
+import emailRoutes from './api/routes/emailRoutes.js';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Certifique-se de carregar as variáveis de ambiente
 
 const app = express();
-const cors = require("cors");
+
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
 app.use('/api/users', userRoutes);
-app.use('/api/emails', emailRoutes); // Usar as rotas de e-mail
+app.use('/api', emailRoutes);
 
 const PORT = process.env.PORT || 3000;
 
