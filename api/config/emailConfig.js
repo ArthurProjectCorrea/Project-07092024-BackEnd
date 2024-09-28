@@ -1,7 +1,5 @@
-// api/config/emailConfig.js
-
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+const nodemailer = require('nodemailer'); // Mudou para require
+const dotenv = require('dotenv'); // Mudou para require
 
 dotenv.config();
 
@@ -15,4 +13,4 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export default transporter;
+module.exports = transporter; // Mudou para module.exports

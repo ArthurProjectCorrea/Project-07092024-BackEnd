@@ -2,7 +2,6 @@
   "name": "project-07092024-backend",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "check-deps": "depcheck",
     "test": "echo \"Error: no test specified\" && exit 1"

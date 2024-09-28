@@ -1,6 +1,4 @@
-// api/controllers/emailController.js
-
-import transporter from '../config/emailConfig.js';
+const transporter = require('../config/emailConfig.js'); // Mudou para require
 
 // Controlador para enviar email via HTTP request
 const enviarEmail = async (req, res) => {
@@ -21,4 +19,4 @@ const enviarEmail = async (req, res) => {
   }
 };
 
-export { enviarEmail };
+module.exports = { enviarEmail }; // Mudou para module.exports

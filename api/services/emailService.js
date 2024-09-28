@@ -1,6 +1,4 @@
-// api/services/emailService.js
-
-import transporter from '../config/emailConfig.js';
+const transporter = require('../config/emailConfig.js'); // Mudou para require
 
 const sendEmail = async (to, subject, message) => {
   const mailOptions = {
@@ -13,4 +11,4 @@ const sendEmail = async (to, subject, message) => {
   return transporter.sendMail(mailOptions);
 };
 
-export { sendEmail };
+module.exports = { sendEmail }; // Mudou para module.exports

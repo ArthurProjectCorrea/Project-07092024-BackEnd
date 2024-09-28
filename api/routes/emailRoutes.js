@@ -1,10 +1,8 @@
-// api/routes/emailRoutes.js
-
-import express from 'express';
-import { enviarEmail } from '../controllers/emailController.js';
+const express = require('express'); // Mudou para require
+const { enviarEmail } = require('../controllers/emailController.js'); // Mudou para require
 
 const router = express.Router();
 
 router.post('/send-email', enviarEmail);
 
-export default router;
+module.exports = router; // Mudou para module.exports

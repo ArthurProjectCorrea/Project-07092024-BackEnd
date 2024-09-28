@@ -1,62 +1,98 @@
-import { User } from "../models/index.js"; // Adicione a extensão ".js" no caminho do módulo
-import bcrypt from "bcrypt";
+const { User } = require('../models'); // Certifique-se de que o modelo User está corretamente importado
+const bcrypt = require('bcrypt');
 
-// Função para criar um novo usuário
-export const createUser = async (userData) => {
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-
-  const user = await User.create({
-    name: userData.name,
-    email: userData.email,
-    password: hashedPassword,
-  });
-
-  return user;
-};
-
-// Função para verificar se o e-mail já existe
-export const emailExists = async (email) => {
+// Função para verificar se o email já existe
+const emailExists = async (email) => {
   const user = await User.findOne({ where: { email } });
-  return user !== null;
+  return !!user; // Retorna true se o email já estiver em uso, caso contrário, false
 };
 
-// Função para verificar se o domínio do e-mail é válido
-export const isEmailValidDomain = (email) => {
-  const validDomains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com"];
-  const domain = email.split("@")[1];
+// Função para validar o domínio do email
+const isEmailValidDomain = (email) => {
+  const validDomains = ['gmail.com', 'yahoo.com']; // Defina os domínios válidos
+  const domain = email.split('@')[1];
   return validDomains.includes(domain);
 };
 
-// Função para autenticar o usuário
-export const authenticateUser = async (email, password) => {
+// Função para obter um usuário pelo email
+const getUserByEmail = async (email) => {
+  return User.findOne({ where: { email } });
+};
+
+// Função para criar um novo usuário
+const createUser = async (userData) => {
+  const { password } = userData;
+
+  // Criptografar a senha antes de salvar o usuário
+  const hashedPassword = await bcrypt.hash(password, 10); // "10" é o fator de custo para o hashing
+
+  const newUser = await User.create({
+    ...userData,
+    password: hashedPassword, // Usando a senha criptografada
+  });
+
+  return newUser;
+};
+
+const authenticateUser = async (email, password) => {
+  // Buscar o usuário pelo email
   const user = await User.findOne({ where: { email } });
+  
   if (!user) {
-    return null; // Usuário não encontrado
+    return null; // Se o usuário não for encontrado, retorna null
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return null; // Senha não corresponde
+  // Comparar a senha fornecida com a senha criptografada no banco
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    return null; // Se a senha estiver incorreta, retorna null
   }
 
-  return user; // Usuário autenticado
+  return user; // Retorna o usuário se a senha estiver correta
 };
 
 // Função para deletar um usuário pelo ID
-export const deleteUser = async (id) => {
+const deleteUser = async (id) => {
   const deletedCount = await User.destroy({ where: { id } });
-  return deletedCount; // Retorna a quantidade de registros deletados
+  return deletedCount; // Retorna o número de registros deletados (0 ou 1)
 };
 
-// Função para listar um único usuário pelo ID
-export const getUserById = async (id) => {
+// Função para buscar um usuário pelo ID
+const getUserById = async (id) => {
   const user = await User.findByPk(id);
-  return user; // Retorna o usuário ou null se não encontrado
+  return user; // Retorna o usuário encontrado ou null
 };
 
-// Função para listar todos os usuários
-export const getAllUsers = async () => {
+// Função para buscar todos os usuários
+const getAllUsers = async () => {
   const users = await User.findAll();
   return users; // Retorna todos os usuários
+};
+
+
+
+const resetPassword = async (email, newPassword) => {
+  const user = await User.findOne({ where: { email } });
+
+  if (!user) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash da senha
+  user.password = hashedPassword; 
+  await user.save();
+  return user; // Retorna o usuário atualizado
+};
+
+module.exports = {
+  emailExists,
+  getUserByEmail,
+  isEmailValidDomain,
+  createUser,
+  authenticateUser,
+  deleteUser,
+  getUserById,
+  getAllUsers,
+  resetPassword,
 };

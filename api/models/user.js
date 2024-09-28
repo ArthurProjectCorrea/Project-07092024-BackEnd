@@ -1,18 +1,13 @@
-export default (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
       unique: true,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
@@ -20,5 +15,10 @@ export default (sequelize, DataTypes) => {
     },
   });
 
-  return User;
+  // Definindo o relacionamento: Um usuário pode ter muitos códigos
+  User.associate = (models) => {
+    User.hasMany(models.Code, { foreignKey: 'userId' });
+  };
+
+  return User; // Retorne o modelo definido
 };
