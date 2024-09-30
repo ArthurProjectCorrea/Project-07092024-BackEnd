@@ -1,9 +1,9 @@
 const userService = require("../services/userService.js"); // Importa o serviço de usuário
-const { sendEmail } = require('../services/emailService.js'); // Importa o serviço de email
+const { sendEmail } = require("../services/emailService.js"); // Importa o serviço de email
 const codeService = require("../services/codeService.js"); // Importa o serviço de código
 const { randomInt } = require("crypto"); // Para gerar números aleatórios
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 dotenv.config();
 
 // Função para verificar o código
@@ -22,7 +22,7 @@ const sendCode = async (req, res) => {
 
     // Enviar o código por e-mail
     const message = `Your verification code is: ${codeValue}`;
-    await sendEmail(email, 'Verification Code', message); // Usando o serviço de e-mail
+    await sendEmail(email, "Verification Code", message); // Usando o serviço de e-mail
 
     // Obter o ID do usuário
     const user = await userService.getUserByEmail(email); // Você precisa ter essa função no seu service
@@ -42,12 +42,12 @@ const getProfile = async (req, res) => {
   try {
     const user = await userService.getUserById(req.user.id);
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return res.status(404).json({ error: "User not found." });
     }
     return res.status(200).json({ user });
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    return res.status(500).json({ error: 'Internal server error.' });
+    console.error("Error fetching user profile:", error);
+    return res.status(500).json({ error: "Internal server error." });
   }
 };
 
@@ -95,14 +95,14 @@ const authenticate = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email }, // Payload do token
       process.env.JWT_SECRET, // Segredo definido no .env
-      { expiresIn: '1h' } // Expiração do token (1 hora)
+      { expiresIn: "1h" } // Expiração do token (1 hora)
     );
 
     // Retornar o token e o usuário
     return res.status(200).json({
       message: "Authenticated successfully",
       token, // Retorna o token gerado
-      user,  // Retorna as informações do usuário
+      user, // Retorna as informações do usuário
     });
   } catch (error) {
     console.error("Error authenticating user:", error);
@@ -162,8 +162,13 @@ const checkCode = async (req, res) => {
       return res.status(400).json({ error: "Code not found." });
     }
 
-    // Verifica se o código é válido (pode-se adicionar lógica adicional aqui se necessário)
-    return res.status(200).json({ message: "Code is valid." });
+    // Se o código for encontrado, exclua-o da tabela
+    await codeService.deleteCode(codeEntry.id);
+
+    // Retorna uma resposta de sucesso
+    return res
+      .status(200)
+      .json({ message: "Code is valid and has been deleted." });
   } catch (error) {
     console.error("Error checking code:", error);
     return res.status(500).json({ error: "Error checking code." });
